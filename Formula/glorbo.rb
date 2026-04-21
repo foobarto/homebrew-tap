@@ -1,0 +1,70 @@
+# typed: false
+# frozen_string_literal: true
+
+# Homebrew formula for Glorbo — filesystem-first agent orchestration.
+#
+# Pre-1.0 and Linux-only (GEP-2 / GEP-5 — agent runtime uses
+# bwrap + inotify kernel APIs). On macOS the formula will refuse
+# to install.
+class Glorbo < Formula
+  desc "Filesystem-first agent orchestration (Elixir/OTP + Phoenix LiveView)"
+  homepage "https://github.com/foobarto/glorbo"
+  version "0.0.4"
+  license "Apache-2.0"
+
+  # Linux-only: Glorbo's agent runtime requires bubblewrap (bwrap)
+  # and inotify kernel APIs. macOS has neither; refuse to install
+  # rather than ship a broken binary.
+  depends_on :linux
+
+  # bwrap is the kernel-enforced sandbox around every agent
+  # subprocess (GEP-5 D4). Without it, agent invocations fail at
+  # the Network.Proxy + sandbox boundary.
+  depends_on "bubblewrap"
+
+  on_linux do
+    on_intel do
+      url "https://github.com/foobarto/glorbo/releases/download/v0.0.4/glorbo-linux-x86_64"
+      sha256 "8804e7c021040ee932260bf3ae90bbf3e943a6ccd957e29afca3d0a481b5e2ea"
+    end
+
+    on_arm do
+      url "https://github.com/foobarto/glorbo/releases/download/v0.0.4/glorbo-linux-aarch64"
+      sha256 "28772d3d9d17c7a03cde50c5eb66bb71b660e4b60def1646b14868d20d8ccc72"
+    end
+  end
+
+  def install
+    # Burrito ships a single self-contained binary. The downloaded
+    # file is the binary itself — rename to `glorbo` and mark
+    # executable.
+    binary = Hardware::CPU.intel? ? "glorbo-linux-x86_64" : "glorbo-linux-aarch64"
+    bin.install binary => "glorbo"
+    chmod 0o755, bin/"glorbo"
+  end
+
+  def caveats
+    <<~EOS
+      Glorbo is pre-1.0. APIs, CLI flags, on-disk layout, and the
+      SQLite schema may change between minor versions.
+
+      First-run setup:
+        glorbo doctor          # verify host prerequisites
+        glorbo init            # scaffold ~/.glorbo/ with an acme example
+        glorbo up              # start the dashboard on :4000
+
+      Agent runtime uses bubblewrap for kernel-enforced sandboxing.
+      `brew install bubblewrap` is declared as a dependency.
+
+      Docs: #{homepage}
+    EOS
+  end
+
+  test do
+    # Doctor in JSON mode returns the version string and a 10-check
+    # preflight report; the shape is asserted in the release CI.
+    output = shell_output("#{bin}/glorbo doctor --json")
+    assert_match(/"version":\s*"0\.0\.4"/, output)
+    assert_match(/"checks":/, output)
+  end
+end

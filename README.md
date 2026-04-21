@@ -16,15 +16,21 @@ brew install glorbo
 |---------|-------------|----------|
 | `glorbo` | Filesystem-first agent orchestration (Elixir/OTP + Phoenix LiveView) | [foobarto/glorbo](https://github.com/foobarto/glorbo) |
 
-## Glorbo — platform note
+## Glorbo — platform notes
 
-Glorbo is **Linux-only**. It depends on `bubblewrap` (kernel-enforced
-sandboxing) and inotify kernel APIs (filesystem watcher); macOS has
-neither. The formula declares `depends_on :linux` so a `brew install`
-on macOS will refuse rather than ship a broken binary.
+**Linux** (full runtime): `brew install foobarto/tap/glorbo` pulls
+the bwrap-sandboxed binary + declares `bubblewrap` as a
+dependency. Homebrew-on-Linux on both `x86_64` and `aarch64`.
 
-Homebrew on Linux (aka Linuxbrew) is fully supported on both
-`x86_64` and `aarch64`.
+**macOS** (experimental, unsandboxed): the formula pulls a darwin
+binary; agents run without the kernel sandbox because bwrap has
+no macOS equivalent yet. `glorbo doctor` flags this. Not
+recommended for production use.
+
+**Windows**: install Glorbo inside [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
+and use the Linux Homebrew formula there. There are no native
+Windows builds; agent runtime depends on Linux kernel primitives
+(bwrap, inotify, user namespaces) that WSL provides transparently.
 
 ## First-run
 

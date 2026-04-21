@@ -12,15 +12,15 @@ class Glorbo < Formula
   version "0.0.4"
   license "Apache-2.0"
 
-  # Linux-only: Glorbo's agent runtime requires bubblewrap (bwrap)
-  # and inotify kernel APIs. macOS has neither; refuse to install
-  # rather than ship a broken binary.
-  depends_on :linux
-
   # bwrap is the kernel-enforced sandbox around every agent
   # subprocess (GEP-5 D4). Without it, agent invocations fail at
   # the Network.Proxy + sandbox boundary.
   depends_on "bubblewrap"
+
+  # Linux-only: Glorbo's agent runtime requires bubblewrap (bwrap)
+  # and inotify kernel APIs. macOS has neither; refuse to install
+  # rather than ship a broken binary.
+  depends_on :linux
 
   on_linux do
     on_intel do
@@ -40,7 +40,7 @@ class Glorbo < Formula
     # executable.
     binary = Hardware::CPU.intel? ? "glorbo-linux-x86_64" : "glorbo-linux-aarch64"
     bin.install binary => "glorbo"
-    chmod 0o755, bin/"glorbo"
+    chmod 0755, bin/"glorbo"
   end
 
   def caveats

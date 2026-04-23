@@ -1,0 +1,80 @@
+name: Update README
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Formula/**'
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Regenerate "Available formulae" table
+        run: |
+          python3 - <<'EOF'
+          import re, os, pathlib
+
+          formula_dir = pathlib.Path("Formula")
+          rows = []
+
+          for rb in sorted(formula_dir.glob("*.rb")):
+              text = rb.read_text()
+
+              # Formula name from class declaration
+              m_class = re.search(r'^class\s+(\w+)\s*<\s*Formula', text, re.MULTILINE)
+              if not m_class:
+                  continue
+              name = m_class.group(1).lower()
+
+              # desc "..."
+              m_desc = re.search(r'^\s*desc\s+"([^"]+)"', text, re.MULTILINE)
+              desc = m_desc.group(1) if m_desc else ""
+
+              # homepage "..."
+              m_home = re.search(r'^\s*homepage\s+"([^"]+)"', text, re.MULTILINE)
+              homepage = m_home.group(1) if m_home else ""
+
+              # Derive a short repo label from the URL (owner/repo)
+              repo_label = re.sub(r'^https?://github\.com/', '', homepage).rstrip('/')
+              upstream_cell = f"[{repo_label}]({homepage})" if homepage else ""
+
+              rows.append(f"| `{name}` | {desc} | {upstream_cell} |")
+
+          table_header = (
+              "| Formula | Description | Upstream |\n"
+              "|---------|-------------|----------|\n"
+          )
+          table_body = "\n".join(rows)
+          new_table = table_header + table_body + "\n"
+
+          readme_path = pathlib.Path("README.md")
+          readme = readme_path.read_text()
+
+          # Replace only the consecutive table lines (lines starting with '|')
+          # under "## Available formulae", preserving everything else.
+          new_readme = re.sub(
+              r'(## Available formulae\n\n)(?:\|[^\n]*\n)+',
+              lambda m: m.group(1) + new_table,
+              readme,
+          )
+
+          readme_path.write_text(new_readme)
+          print("README.md updated.")
+          EOF
+
+      - name: Commit updated README if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet README.md || (
+            git add README.md &&
+            git commit -m "docs: update Available formulae table [skip ci]" &&
+            git push
+          )

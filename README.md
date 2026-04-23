@@ -15,6 +15,7 @@ brew install glorbo
 | Formula | Description | Upstream |
 |---------|-------------|----------|
 | `glorbo` | Filesystem-first agent orchestration (Elixir/OTP + Phoenix LiveView) | [foobarto/glorbo](https://github.com/foobarto/glorbo) |
+| `stado` | Sandboxed, git-native coding-agent runtime | [foobarto/stado](https://github.com/foobarto/stado) |
 
 ## Glorbo — platform notes
 

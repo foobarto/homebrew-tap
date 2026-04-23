@@ -5,21 +5,21 @@
 class Stado < Formula
   desc "Sandboxed, git-native coding-agent runtime"
   homepage "https://github.com/foobarto/stado"
-  version "0.2.1"
+  version "0.2.2"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/foobarto/stado/releases/download/v0.2.1/stado_0.2.1_darwin_amd64.tar.gz"
-      sha256 "ccb2abb7eaaba9969feb9ed8b86a075daec1f8cb6ef0f4113a9229f6acc7c69e"
+      url "https://github.com/foobarto/stado/releases/download/v0.2.2/stado_0.2.2_darwin_amd64.tar.gz"
+      sha256 "44001a7ef429e95b6655ae88b9bc4b887997704911ff1728d667eb1f12e7f908"
 
       define_method(:install) do
         bin.install "stado"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/foobarto/stado/releases/download/v0.2.1/stado_0.2.1_darwin_arm64.tar.gz"
-      sha256 "ff93b48a75d0612214205d92f5fb8336249e76f01d4e8a983633a081c330b596"
+      url "https://github.com/foobarto/stado/releases/download/v0.2.2/stado_0.2.2_darwin_arm64.tar.gz"
+      sha256 "3b414f2d8e5ad4d7d0d3403f06f62bc8fadd82bdc3ac70adb5c65029437eda8e"
 
       define_method(:install) do
         bin.install "stado"
@@ -29,15 +29,15 @@ class Stado < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/foobarto/stado/releases/download/v0.2.1/stado_0.2.1_linux_amd64.tar.gz"
-      sha256 "5b13e8714857148648ebcb5d0b22369622f38a0cea40d605c3fc091e9a5a045a"
+      url "https://github.com/foobarto/stado/releases/download/v0.2.2/stado_0.2.2_linux_amd64.tar.gz"
+      sha256 "efe61a23cf0a575ad3ec132176bc760468911e1a282514693d754abb2a743994"
       define_method(:install) do
         bin.install "stado"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/foobarto/stado/releases/download/v0.2.1/stado_0.2.1_linux_arm64.tar.gz"
-      sha256 "0d42fe05528bbedb305ff60a5031b7cc979f2232359115e46ddabfa027173406"
+      url "https://github.com/foobarto/stado/releases/download/v0.2.2/stado_0.2.2_linux_arm64.tar.gz"
+      sha256 "ffeaaf0feff4a372036e8a2ebcbceda2b9d5f7931d5a33241496db811ff45269"
       define_method(:install) do
         bin.install "stado"
       end

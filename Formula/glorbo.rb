@@ -15,7 +15,7 @@
 class Glorbo < Formula
   desc "Filesystem-first agent orchestration (Elixir/OTP + Phoenix LiveView)"
   homepage "https://github.com/foobarto/glorbo"
-  version "0.12.1"
+  version "0.12.2"
   license "Apache-2.0"
 
   on_linux do
@@ -25,25 +25,25 @@ class Glorbo < Formula
     depends_on "bubblewrap"
 
     on_intel do
-      url "https://github.com/foobarto/glorbo/releases/download/v0.12.1/glorbo-linux-x86_64"
-      sha256 "d8b33284fe527376c14084c19f48ddf7eba14618862ae39e9936258967d0f1de"
+      url "https://github.com/foobarto/glorbo/releases/download/v0.12.2/glorbo-linux-x86_64"
+      sha256 "277c565e3f68b7fc2ae44e730a4f63ef38cae9480e31ae755a69773dafcc01e8"
     end
 
     on_arm do
-      url "https://github.com/foobarto/glorbo/releases/download/v0.12.1/glorbo-linux-aarch64"
-      sha256 "caa557848e090351565629ff481daedaeed268b1b8df1f709cf3afd788d28973"
+      url "https://github.com/foobarto/glorbo/releases/download/v0.12.2/glorbo-linux-aarch64"
+      sha256 "5066119ac222e23d31600605f342c45454b67c8dbd4d608cf524803754b260e5"
     end
   end
 
   on_macos do
     on_intel do
-      url "https://github.com/foobarto/glorbo/releases/download/v0.12.1/glorbo-darwin-x86_64"
-      sha256 "2871be9d53ea6b0a8dce19fe0a259e4c93c2664539f8cdb0e41ba11fe4739e0a"
+      url "https://github.com/foobarto/glorbo/releases/download/v0.12.2/glorbo-darwin-x86_64"
+      sha256 "67498ae0fabebfd659ded31b647857e67769e80ce0fb0364f40263029a8ef197"
     end
 
     on_arm do
-      url "https://github.com/foobarto/glorbo/releases/download/v0.12.1/glorbo-darwin-arm64"
-      sha256 "7bba7653ca92596e9cd260fea1a9da3f2c3761956478599e9e8a2f3720bbd3a7"
+      url "https://github.com/foobarto/glorbo/releases/download/v0.12.2/glorbo-darwin-arm64"
+      sha256 "e1af8ce3cdeefc61b7aaf24ad1ac8228640d166b6e788950b10331afc4378ee6"
     end
   end
 
@@ -90,7 +90,7 @@ class Glorbo < Formula
   test do
     # Doctor in JSON mode returns the version + check list.
     output = shell_output("#{bin}/glorbo doctor --json")
-    assert_match(/"version":\s*"0\\.12\\.1"/, output)
+    assert_match(/"version":\s*"0\\.12\\.2"/, output)
     assert_match(/"checks":/, output)
   end
 end

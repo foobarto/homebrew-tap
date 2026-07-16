@@ -14,6 +14,7 @@ brew install glorbo
 
 | Formula | Description | Upstream |
 |---------|-------------|----------|
+| `devbox` | Disposable, CWD-mounted dev VMs on Lima with an AI-CLI toolchain | [foobarto/devbox](https://github.com/foobarto/devbox) |
 | `glorbo` | Filesystem-first agent orchestration (Elixir/OTP + Phoenix LiveView) | [foobarto/glorbo](https://github.com/foobarto/glorbo) |
 
 ## Glorbo — platform notes

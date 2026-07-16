@@ -1,0 +1,55 @@
+# typed: false
+# frozen_string_literal: true
+
+# Homebrew formula for devbox — disposable, CWD-mounted dev VMs on Lima with an
+# AI-CLI toolchain (claude, codex, opencode, stado) + Homebrew.
+#
+# The source repo is private, so this is a HEAD-only formula cloned over SSH:
+#
+#   brew install --HEAD foobarto/tap/devbox
+#   brew upgrade --fetch-HEAD foobarto/tap/devbox
+class Devbox < Formula
+  desc "Disposable, CWD-mounted dev VMs on Lima with an AI-CLI toolchain"
+  homepage "https://github.com/foobarto/devbox"
+  license "MIT"
+  head "git@github.com:foobarto/devbox.git", using: :git, branch: "main"
+
+  # NOTE: intentionally no `depends_on "lima"`. Many users (and this tap's
+  # author) run a manually-pinned limactl outside Homebrew; a hard dep would
+  # install a second, redundant lima. devbox checks for limactl at runtime and
+  # errors clearly if it's absent. `brew install lima` if you want brew to own it.
+
+  def install
+    bin.install "bin/devbox"
+    chmod 0755, bin/"devbox"
+
+    # Ship the AI proxy + example hooks; expose a thin launcher on PATH.
+    libexec.install "proxy", "examples"
+    (bin/"devbox-ai-proxy").write <<~SH
+      #!/bin/bash
+      exec "#{libexec}/proxy/run.sh" "$@"
+    SH
+    chmod 0755, bin/"devbox-ai-proxy"
+  end
+
+  def caveats
+    <<~EOS
+      devbox requires Lima (limactl) on your PATH, with a QEMU or VZ backend.
+      Install it however you prefer, e.g. `brew install lima`.
+
+      In any project directory:
+        devbox                 # builds the golden image once, then clone + shell
+
+      The AI proxy (devbox-ai-proxy) additionally needs python3 on PATH
+      (standard library only). Host-side config lives under ~/.config/devbox/.
+
+      Docs: #{homepage}
+    EOS
+  end
+
+  test do
+    # --help is dispatched before the limactl check, so it runs with no VM stack.
+    assert_match "disposable", shell_output("#{bin}/devbox --help")
+    assert_predicate bin/"devbox-ai-proxy", :executable?
+  end
+end

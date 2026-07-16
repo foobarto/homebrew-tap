@@ -4,7 +4,7 @@
 # Homebrew formula for devbox — disposable, CWD-mounted dev VMs on Lima with an
 # AI-CLI toolchain (claude, codex, opencode, stado) + Homebrew.
 #
-# The source repo is private, so this is a HEAD-only formula cloned over SSH:
+# HEAD-only formula (no tagged release yet):
 #
 #   brew install --HEAD foobarto/tap/devbox
 #   brew upgrade --fetch-HEAD foobarto/tap/devbox
@@ -12,7 +12,7 @@ class Devbox < Formula
   desc "Disposable, CWD-mounted dev VMs on Lima with an AI-CLI toolchain"
   homepage "https://github.com/foobarto/devbox"
   license "MIT"
-  head "git@github.com:foobarto/devbox.git", using: :git, branch: "main"
+  head "https://github.com/foobarto/devbox.git", branch: "main"
 
   # NOTE: intentionally no `depends_on "lima"`. Many users (and this tap's
   # author) run a manually-pinned limactl outside Homebrew; a hard dep would

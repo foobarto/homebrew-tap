@@ -75,7 +75,6 @@ jobs:
       - name: Validate the formula
         run: |
           ruby -c Formula/devbox.rb
-          brew style Formula/devbox.rb
 
       - name: Commit the formula update
         env:

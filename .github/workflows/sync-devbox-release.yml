@@ -1,0 +1,92 @@
+name: Sync Devbox release
+
+on:
+  # Runs away from the top of the hour, when scheduled GitHub jobs are most
+  # likely to be delayed. This needs no cross-repository credential because
+  # Devbox releases are public and the generated token writes only this tap.
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-devbox-release
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the latest published Devbox release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="$(gh api repos/foobarto/devbox/releases/latest --jq .tag_name)"
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+            printf 'latest Devbox release is not a supported semantic version: %s\n' "$tag" >&2
+            exit 1
+          fi
+          url="https://github.com/foobarto/devbox/archive/refs/tags/${tag}.tar.gz"
+          sha256="$(curl --fail --location --retry 3 --silent --show-error "$url" | sha256sum | awk '{print $1}')"
+          printf 'tag=%s\nsha256=%s\n' "$tag" "$sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Update the Devbox formula
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          SHA256: ${{ steps.release.outputs.sha256 }}
+        run: |
+          python3 - "$TAG" "$SHA256" <<'PY'
+          import re
+          import sys
+          from pathlib import Path
+
+          tag, sha256 = sys.argv[1:]
+          version = tag.removeprefix("v")
+          path = Path("Formula/devbox.rb")
+          text = path.read_text(encoding="utf-8")
+
+          text, urls = re.subn(
+              r'url "https://github\.com/foobarto/devbox/archive/refs/tags/v[^" ]+\.tar\.gz"',
+              f'url "https://github.com/foobarto/devbox/archive/refs/tags/{tag}.tar.gz"',
+              text,
+              count=1,
+          )
+          text, checksums = re.subn(
+              r'sha256 "[0-9a-f]{64}"', f'sha256 "{sha256}"', text, count=1
+          )
+          text, versions = re.subn(
+              r'(?:devbox|devbox-ai-proxy) \d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?',
+              lambda match: match.group(0).split()[0] + " " + version,
+              text,
+          )
+          if urls != 1 or checksums != 1 or versions != 2:
+              raise SystemExit(
+                  f"unexpected Formula/devbox.rb shape: url={urls}, sha256={checksums}, versions={versions}"
+              )
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Validate the formula
+        run: |
+          ruby -c Formula/devbox.rb
+          brew style Formula/devbox.rb
+
+      - name: Commit the formula update
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          if git diff --quiet -- Formula/devbox.rb; then
+            printf 'Homebrew formula already tracks %s\n' "$TAG"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/devbox.rb
+          git commit -m "brew: update devbox to ${TAG}"
+          git push

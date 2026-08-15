@@ -1,8 +1,8 @@
 class GapiaDesktop < Formula
   desc "GNOME display controls for VITURE XR glasses"
   homepage "https://github.com/foobarto/gapia-desktop"
-  url "https://github.com/foobarto/gapia-desktop/releases/download/v0.1.1/gapia-desktop-0.1.1.tar.gz"
-  sha256 "586310f2a9df418aec8f9eeff06c7ed5fdaf27ff4a946298dee78d77cc411629"
+  url "https://github.com/foobarto/gapia-desktop/releases/download/v0.1.2/gapia-desktop-0.1.2.tar.gz"
+  sha256 "7a8300ac2aec46f18f46ff9bf4c116e0de72614c780312f39f4a6d58f68879ba"
   license any_of: ["MIT", "Apache-2.0"]
 
   depends_on "cmake" => :build
@@ -72,7 +72,16 @@ class GapiaDesktop < Formula
     end
     (bin/"gapia-desktop-setup-host").write <<~SH
       #!/bin/sh
+      case "${1:-}" in
+        -h|--help) ;;
+        *)
+          if [ "$(id -u)" -ne 0 ]; then
+            exec sudo -- "$0" "$@"
+          fi
+          ;;
+      esac
       export GAPIA_SETUP_COMMAND=gapia-desktop-setup-host
+      export GAPIA_SETUP_ELEVATES=1
       #{setup_environment}exec "#{pkgshare}/scripts/setup-host.sh" "$@"
     SH
     chmod 0755, bin/"gapia-desktop-setup-host"
@@ -106,7 +115,7 @@ class GapiaDesktop < Formula
         HOMEBREW_GAPIA_VITURE_SDK_DIR=/path/to/sdk brew install --build-from-source gapia-desktop
 
       Finish GNOME udev, user-service, and panel setup with one idempotent call:
-        sudo gapia-desktop-setup-host
+        gapia-desktop-setup-host
     EOS
   end
 
@@ -114,7 +123,10 @@ class GapiaDesktop < Formula
     system "python3", libexec/"native_display_controller.py", "--config",
            pkgshare/"config/gapia.json", "--check-config"
     assert_predicate bin/"gapia-desktop-setup-host", :executable?
-    assert_match "Usage:", shell_output("#{bin}/gapia-desktop-setup-host --help")
+    assert_match "Usage: gapia-desktop-setup-host",
+                 shell_output("#{bin}/gapia-desktop-setup-host --help")
+    assert_match 'exec sudo -- "$0" "$@"',
+                 (bin/"gapia-desktop-setup-host").read
     assert_match "GAPIA_SETUP_COMMAND=gapia-desktop-setup-host",
                  (bin/"gapia-desktop-setup-host").read
     if (libexec/"gapia-native-display.bin").exist?

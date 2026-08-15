@@ -1,13 +1,15 @@
 # homebrew-tap
 
-Homebrew tap for [Glorbo](https://github.com/foobarto/glorbo) and
-other foobarto tools.
+Homebrew tap for [Glorbo](https://github.com/foobarto/glorbo),
+[Gapia Desktop](https://github.com/foobarto/gapia-desktop), and other foobarto
+tools.
 
 ## Install
 
 ```bash
 brew tap foobarto/tap
 brew install glorbo
+brew install gapia-desktop
 ```
 
 ## Available formulae
@@ -15,7 +17,22 @@ brew install glorbo
 | Formula | Description | Upstream |
 |---------|-------------|----------|
 | `devbox` | Disposable, CWD-mounted dev VMs on Lima with an AI-CLI toolchain | [foobarto/devbox](https://github.com/foobarto/devbox) |
+| `gapia-desktop` | GNOME display controls for VITURE XR glasses | [foobarto/gapia-desktop](https://github.com/foobarto/gapia-desktop) |
 | `glorbo` | Filesystem-first agent orchestration (Elixir/OTP + Phoenix LiveView) | [foobarto/glorbo](https://github.com/foobarto/glorbo) |
+
+## Gapia Desktop setup
+
+The VITURE Linux SDK is licensed and downloaded separately. It is not included
+in this tap or in Gapia Desktop release artifacts. Install from source with the
+extracted SDK, then run the idempotent host integration once:
+
+```bash
+GAPIA_VITURE_SDK_DIR=/path/to/sdk brew install --build-from-source gapia-desktop
+sudo "$(brew --prefix gapia-desktop)/share/gapia-desktop/scripts/setup-host.sh" \
+  --sdk-dir /path/to/sdk
+```
+
+The current verified hardware profile is VITURE Beast on GNOME 50 Wayland.
 
 ## Glorbo — platform notes
 

@@ -31,7 +31,7 @@ jobs:
               m_class = re.search(r'^class\s+(\w+)\s*<\s*Formula', text, re.MULTILINE)
               if not m_class:
                   continue
-              name = m_class.group(1).lower()
+              name = rb.stem
 
               # desc "..."
               m_desc = re.search(r'^\s*desc\s+"([^"]+)"', text, re.MULTILINE)

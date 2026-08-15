@@ -1,10 +1,9 @@
 class GapiaDesktop < Formula
   desc "GNOME display controls for VITURE XR glasses"
   homepage "https://github.com/foobarto/gapia-desktop"
-  url "https://github.com/foobarto/gapia-desktop/releases/download/v0.1.0/gapia-desktop-0.1.0.tar.gz"
-  sha256 "b5c7af8bb4cce4e0988f90e337c8bed9c760456fc67133f5954afc88052b99a2"
+  url "https://github.com/foobarto/gapia-desktop/releases/download/v0.1.1/gapia-desktop-0.1.1.tar.gz"
+  sha256 "586310f2a9df418aec8f9eeff06c7ed5fdaf27ff4a946298dee78d77cc411629"
   license any_of: ["MIT", "Apache-2.0"]
-  revision 2
 
   depends_on "cmake" => :build
   depends_on "ninja" => :build
@@ -73,6 +72,7 @@ class GapiaDesktop < Formula
     end
     (bin/"gapia-desktop-setup-host").write <<~SH
       #!/bin/sh
+      export GAPIA_SETUP_COMMAND=gapia-desktop-setup-host
       #{setup_environment}exec "#{pkgshare}/scripts/setup-host.sh" "$@"
     SH
     chmod 0755, bin/"gapia-desktop-setup-host"
@@ -115,6 +115,8 @@ class GapiaDesktop < Formula
            pkgshare/"config/gapia.json", "--check-config"
     assert_predicate bin/"gapia-desktop-setup-host", :executable?
     assert_match "Usage:", shell_output("#{bin}/gapia-desktop-setup-host --help")
+    assert_match "GAPIA_SETUP_COMMAND=gapia-desktop-setup-host",
+                 (bin/"gapia-desktop-setup-host").read
     if (libexec/"gapia-native-display.bin").exist?
       assert_match "export GAPIA_VITURE_SDK_DIR=",
                    (bin/"gapia-desktop-setup-host").read

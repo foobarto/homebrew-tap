@@ -1,8 +1,8 @@
 class GapiaDesktop < Formula
   desc "GNOME display controls for VITURE XR glasses"
   homepage "https://github.com/foobarto/gapia-desktop"
-  url "https://github.com/foobarto/gapia-desktop/releases/download/v0.1.2/gapia-desktop-0.1.2.tar.gz"
-  sha256 "7a8300ac2aec46f18f46ff9bf4c116e0de72614c780312f39f4a6d58f68879ba"
+  url "https://github.com/foobarto/gapia-desktop/releases/download/v0.1.3/gapia-desktop-0.1.3.tar.gz"
+  sha256 "f61772d511431b14883d0824f84b5f4801af1084d0dbd1dcd9d0fe150238be49"
   license any_of: ["MIT", "Apache-2.0"]
 
   depends_on "cmake" => :build

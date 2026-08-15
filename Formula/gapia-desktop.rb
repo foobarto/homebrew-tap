@@ -4,6 +4,7 @@ class GapiaDesktop < Formula
   url "https://github.com/foobarto/gapia-desktop/releases/download/v0.1.0/gapia-desktop-0.1.0.tar.gz"
   sha256 "b5c7af8bb4cce4e0988f90e337c8bed9c760456fc67133f5954afc88052b99a2"
   license any_of: ["MIT", "Apache-2.0"]
+  revision 1
 
   depends_on "cmake" => :build
   depends_on "ninja" => :build
@@ -65,6 +66,11 @@ class GapiaDesktop < Formula
     libexec.install_symlink \
       pkgshare/"scripts/gnome_display_policy.py" => "gapia-gnome-display-policy"
     bin.write_exec_script libexec/"gapia-desktop"
+    (bin/"gapia-desktop-setup-host").write <<~SH
+      #!/bin/sh
+      exec "#{pkgshare}/scripts/setup-host.sh" "$@"
+    SH
+    chmod 0755, bin/"gapia-desktop-setup-host"
 
     if sdk
       libexec.install "build/gapia-native-display" => "gapia-native-display.bin"
@@ -95,12 +101,14 @@ class GapiaDesktop < Formula
         GAPIA_VITURE_SDK_DIR=/path/to/sdk brew install --build-from-source gapia-desktop
 
       Finish GNOME udev, user-service, and panel setup with one idempotent call:
-        sudo #{pkgshare}/scripts/setup-host.sh --sdk-dir /path/to/sdk
+        sudo gapia-desktop-setup-host --sdk-dir /path/to/sdk
     EOS
   end
 
   test do
     system "python3", libexec/"native_display_controller.py", "--config",
            pkgshare/"config/gapia.json", "--check-config"
+    assert_predicate bin/"gapia-desktop-setup-host", :executable?
+    assert_match "Usage:", shell_output("#{bin}/gapia-desktop-setup-host --help")
   end
 end

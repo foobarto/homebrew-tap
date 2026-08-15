@@ -24,12 +24,16 @@ brew install gapia-desktop
 
 The VITURE Linux SDK is licensed and downloaded separately. It is not included
 in this tap or in Gapia Desktop release artifacts. Install from source with the
-extracted SDK, then run the idempotent host integration once:
+extracted SDK, then run the self-elevating, idempotent host integration once:
 
 ```bash
 HOMEBREW_GAPIA_VITURE_SDK_DIR=/path/to/sdk brew install --build-from-source gapia-desktop
-sudo gapia-desktop-setup-host
+gapia-desktop-setup-host
 ```
+
+Run `gapia-desktop-setup-host` without a `sudo` prefix. The wrapper requests
+administrator access by absolute path, avoiding the restricted command search
+path used by `sudo` on many Linux systems.
 
 The current verified hardware profile is VITURE Beast on GNOME 50 Wayland.
 

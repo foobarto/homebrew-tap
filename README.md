@@ -27,8 +27,8 @@ in this tap or in Gapia Desktop release artifacts. Install from source with the
 extracted SDK, then run the idempotent host integration once:
 
 ```bash
-GAPIA_VITURE_SDK_DIR=/path/to/sdk brew install --build-from-source gapia-desktop
-sudo gapia-desktop-setup-host --sdk-dir /path/to/sdk
+HOMEBREW_GAPIA_VITURE_SDK_DIR=/path/to/sdk brew install --build-from-source gapia-desktop
+sudo gapia-desktop-setup-host
 ```
 
 The current verified hardware profile is VITURE Beast on GNOME 50 Wayland.

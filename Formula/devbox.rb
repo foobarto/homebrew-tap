@@ -12,8 +12,8 @@
 class Devbox < Formula
   desc "Disposable, CWD-mounted dev VMs on Lima with an AI-CLI toolchain"
   homepage "https://github.com/foobarto/devbox"
-  url "https://github.com/foobarto/devbox/archive/refs/tags/v1.3.1.tar.gz"
-  sha256 "bbe5b4464016972648c86baef3fcb63c73cfa3c09478f77f5816a4b36d8b0a62"
+  url "https://github.com/foobarto/devbox/archive/refs/tags/v1.3.2.tar.gz"
+  sha256 "d23f11bf93f21416140b11db361282778f15e34f85314b36e9d7942ac2a27af2"
   license "MIT"
   head "https://github.com/foobarto/devbox.git", branch: "main"
 
@@ -56,8 +56,8 @@ class Devbox < Formula
   test do
     # --help is dispatched before the limactl check, so it runs with no VM stack.
     assert_match "disposable", shell_output("#{bin}/devbox --help")
-    assert_equal "devbox 1.3.1", shell_output("#{bin}/devbox --version").strip
-    assert_equal "devbox-ai-proxy 1.3.1", shell_output("#{bin}/devbox-ai-proxy --version").strip
+    assert_equal "devbox 1.3.2", shell_output("#{bin}/devbox --version").strip
+    assert_equal "devbox-ai-proxy 1.3.2", shell_output("#{bin}/devbox-ai-proxy --version").strip
     assert_predicate bin/"devbox-ai-proxy", :executable?
   end
 end
